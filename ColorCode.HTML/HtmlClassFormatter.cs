@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ColorCode.Common;
 using ColorCode.Parsing;
 using System.Text;
@@ -65,9 +66,9 @@ namespace ColorCode
             var str = new StringBuilder();
 
             var plainText = Styles[ScopeName.PlainText];
-            if (!string.IsNullOrWhiteSpace(plainText?.Background)) str.Append($"body{{background-color:{plainText.Background};}}");
+            if (!string.IsNullOrWhiteSpace(plainText?.Background)) str.Append($"body{{background-color:{plainText.Background.ToHtmlColor()};}}");
 
-            foreach (var style in Styles)
+            foreach (var style in Styles.OrderBy(style => style.ReferenceName))
             {
                 str.Append($" .{style.ReferenceName}{{");
 
@@ -75,7 +76,7 @@ namespace ColorCode
                     str.Append($"color:{style.Foreground.ToHtmlColor()};");
 
                 if (!string.IsNullOrWhiteSpace(style.Background))
-                    str.Append($"color:{style.Background.ToHtmlColor()};");
+                    str.Append($"background-color:{style.Background.ToHtmlColor()};");
 
                 if (style.Italic)
                     str.Append("font-style: italic;");
